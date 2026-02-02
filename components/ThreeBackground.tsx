@@ -5,107 +5,98 @@ import * as THREE from "three";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
-import getStarfield from "@/public/three/getStarfield";
-import { getFresnelMat } from "@/public/three/getFresnelMat";
+import getStarfield from "public/three/getStarfield";
+import { getFresnelMat } from "public/three/getFresnelMat";
 
 export default function ThreeBackground() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!ref.current) return;
 
-    /* ======================
-       Scene setup
-    ====================== */
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(
-      50,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(0, 2.5, 10);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera.position.set(0, 0, 12);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    containerRef.current.appendChild(renderer.domElement);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    ref.current.appendChild(renderer.domElement);
 
-    /* ======================
-       Earth
-    ====================== */
+    // 🌍 Earth
     const earthGroup = new THREE.Group();
+    earthGroup.scale.setScalar(4.6);
+    earthGroup.position.set(0, -4.2, 0);
     scene.add(earthGroup);
 
-    const textureLoader = new THREE.TextureLoader();
-    const geometry = new THREE.IcosahedronGeometry(1, 12);
+    const loader = new THREE.TextureLoader();
+    const geo = new THREE.IcosahedronGeometry(1, 12);
 
     const earth = new THREE.Mesh(
-      geometry,
+      geo,
       new THREE.MeshPhongMaterial({
-        map: textureLoader.load("/textures/00_earthmap1k.jpg"),
-        bumpMap: textureLoader.load("/textures/01_earthbump1k.jpg"),
-        bumpScale: 0.04
+        map: loader.load("/textures/00_earthmap1k.jpg"),
+        bumpMap: loader.load("/textures/01_earthbump1k.jpg"),
+        bumpScale: 0.04,
+        specularMap: loader.load("/textures/02_earthspec1k.jpg")
       })
     );
-
     earthGroup.add(earth);
-    earthGroup.add(new THREE.Mesh(geometry, getFresnelMat()));
 
-    /* ======================
-       Starfield
-    ====================== */
-    scene.add(getStarfield({ numStars: 2000 }));
+    const glow = new THREE.Mesh(geo, getFresnelMat());
+    glow.scale.setScalar(1.02);
+    earthGroup.add(glow);
 
-    /* ======================
-       Text
-    ====================== */
-    const fontLoader = new FontLoader();
-    fontLoader.load("/fonts/helvetiker_bold.typeface.json", (font: any) => {
-      const textGeometry = new TextGeometry("SKILLXCHANGE", {
+    // ✨ Stars
+    const stars = getStarfield({ numStars: 2500 });
+    scene.add(stars);
+
+    // ☀ Light
+    const sun = new THREE.DirectionalLight(0xffffff, 2);
+    sun.position.set(-5, 2, 5);
+    scene.add(sun);
+
+    // 🏷 Title
+    new FontLoader().load("/fonts/helvetiker_bold.typeface.json", (font) => {
+      const geo = new TextGeometry("SKILLXCHANGE", {
         font,
         size: 1.6,
         height: 0.05
       });
 
-      textGeometry.center();
+      geo.center();
 
-      const textMesh = new THREE.Mesh(
-        textGeometry,
-        new THREE.MeshBasicMaterial({ color: 0x3f7cff })
-      );
+      const mat = new THREE.MeshStandardMaterial({ color: 0x3f7cff });
+      const text = new THREE.Mesh(geo, mat);
 
-      textMesh.position.set(0, 2.2, -2);
-      scene.add(textMesh);
+      text.position.set(0, 2.4, 0);
+      scene.add(text);
     });
 
-    /* ======================
-       Light
-    ====================== */
-    const light = new THREE.DirectionalLight(0xffffff, 2);
-    light.position.set(-2, 0.5, 1.5);
-    scene.add(light);
-
-    /* ======================
-       Animation loop
-    ====================== */
-    const animate = () => {
-      earth.rotation.y += 0.001;
-      renderer.render(scene, camera);
+    function animate() {
       requestAnimationFrame(animate);
-    };
+      earth.rotation.y += 0.001;
+      glow.rotation.y += 0.001;
+      stars.rotation.y += 0.0005;
+      renderer.render(scene, camera);
+    }
 
     animate();
 
-    /* ======================
-       Cleanup
-    ====================== */
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener("resize", onResize);
+
     return () => {
+      window.removeEventListener("resize", onResize);
       renderer.dispose();
-      containerRef.current?.removeChild(renderer.domElement);
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed inset-0 -z-10" />;
+  return <div ref={ref} className="fixed inset-0 -z-10" />;
 }
