@@ -2,98 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #6B3F69;
-  --foreground: #DDC3C3;
-  --input-bg: #8D5F8C;
-  --card-bg: #A376A2;
-  --button-bg: #8D5F8C;
-  --button-hover: #A376A2;
-  --glass: rgba(255,255,255,0.03);
-}
-
-html, body, #__next {
-  height: 100%;
-  margin: 0;
-  padding: 5;
-  overflow-x: hidden; /* prevent horizontal scrollbar */
-  overflow-y: auto;   /* allow scrolling only if content really exceeds viewport */
-}
-
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Generic utility classes */
-.container-wide {
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.card {
-  background: var(--card-bg);
-  color: var(--foreground);
-  border-radius: 18px;
-  padding: 1.25rem;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+  margin: 0;
+  background: black;
+  color: white;
+  font-family: Inter, system-ui, sans-serif;
+  overflow: hidden;
 }
 
 .input {
-  background: var(--input-bg);
-  border-radius: 1.5rem;
-  padding: .75rem 1rem;
-  color: #2a1826;
-  border: 1px solid rgba(255,255,255,0.06);
-  outline: none;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
 }
 
-.button {
-  background: var(--button-bg);
-  color: var(--foreground);
-  padding: .6rem 1.25rem;
-  border-radius: 1.5rem;
-  border: none;
+.nav-btn {
+  padding: 0.75em 2em;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0d1b2a, #1b3a8a);
+  border: 2px solid #5fa8ff;
+  color: #eaf0ff;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
 }
-
-.button:hover { 
-  background: var(--button-hover); 
-  transform: translateY(-2px); 
-}
-
-.small-button {
-  background: transparent;
-  color: var(--foreground);
-  padding: .35rem .7rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-/* Navbar-specific floating card */
-.navbar-card {
-  background: var(--card-bg);
-  color: var(--foreground);
-  border-radius: 1.5rem; /* keep rounded like before */
-  padding: 1rem 2rem; /* slightly smaller top/bottom padding than content cards */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* slightly lighter shadow */
-  backdrop-filter: blur(8px); /* floating glass effect */
-  width: 100%; /* full width */
-}
-
-.placeholder-muted { color: rgba(221,195,195,0.6); }
-
-.input::placeholder {
-  color: #DDC3C3;
-}
-
-::-webkit-scrollbar { height: 10px; width: 8px; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }

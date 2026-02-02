@@ -1,59 +1,35 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { PeraWalletConnect } from "@perawallet/connect";
 
-type WalletContextType = {
-  wallet: string | null;
-  connectWallet: () => Promise<void>;
-  disconnectWallet: () => void;
-};
+const WalletContext = createContext<any>(null);
 
-const WalletContext = createContext<WalletContextType | null>(null);
-
-export function WalletProvider({ children }: { children: ReactNode }) {
+export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [wallet, setWallet] = useState<string | null>(null);
-  const peraWallet = useMemo(() => new PeraWalletConnect(), []);
+  const pera = useMemo(() => new PeraWalletConnect(), []);
 
   useEffect(() => {
-    peraWallet
-      .reconnectSession()
-      .then((accounts: string[]) => {
-        if (accounts && accounts.length) setWallet(accounts[0]);
-      })
-      .catch(() => {});
-  }, [peraWallet]);
-
-  const connectWallet = async () => {
-    try {
-      const accounts: string[] = await peraWallet.connect();
-      if (accounts && accounts.length) setWallet(accounts[0]);
-    } catch (err) {
-      console.warn("Wallet connect cancelled or failed", err);
-    }
-  };
-
-  const disconnectWallet = () => {
-    peraWallet.disconnect(); // terminate Pera session
-    setWallet(null);         // clear wallet in state
-  };
+    pera.reconnectSession().then(acc => acc?.length && setWallet(acc[0]));
+  }, [pera]);
 
   return (
-    <WalletContext.Provider value={{ wallet, connectWallet, disconnectWallet }}>
+    <WalletContext.Provider
+      value={{
+        wallet,
+        connectWallet: async () => {
+          const acc = await pera.connect();
+          setWallet(acc[0]);
+        },
+        disconnectWallet: () => {
+          pera.disconnect();
+          setWallet(null);
+        },
+      }}
+    >
       {children}
     </WalletContext.Provider>
   );
 }
 
-export function useWallet() {
-  const ctx = useContext(WalletContext);
-  if (!ctx) throw new Error("useWallet must be used inside WalletProvider");
-  return ctx;
-}
+export const useWallet = () => useContext(WalletContext);
