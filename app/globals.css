@@ -48,7 +48,7 @@ body {
 
 .input {
   background: var(--input-bg);
-  border-radius: 12px;
+  border-radius: 1.5rem;
   padding: .75rem 1rem;
   color: #2a1826;
   border: 1px solid rgba(255,255,255,0.06);
@@ -59,7 +59,7 @@ body {
   background: var(--button-bg);
   color: var(--foreground);
   padding: .6rem 1.25rem;
-  border-radius: 12px;
+  border-radius: 1.5rem;
   border: none;
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(0,0,0,0.25);
@@ -90,6 +90,10 @@ body {
 }
 
 .placeholder-muted { color: rgba(221,195,195,0.6); }
+
+.input::placeholder {
+  color: #DDC3C3;
+}
 
 ::-webkit-scrollbar { height: 10px; width: 8px; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }

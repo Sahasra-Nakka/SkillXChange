@@ -29,7 +29,7 @@ export default function Home() {
       <div className="flex flex-col items-center w-full max-w-4xl gap-8">
         {/* Title and Tagline */}
         <div className="text-center">
-          <h1 className="text-5xl font-bold">SkillXChange</h1>
+          <h1 className="text-[50px]">SkillXChange</h1>
           <p className="text-lg opacity-80 mt-2">
             Exchange skills. Learn together. Grow together.
           </p>
